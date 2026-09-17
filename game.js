@@ -197,7 +197,7 @@ class ConfettiCannon {
 // 4. Main Game Engine
 class Game {
   constructor() {
-    this.gridCols = 4;
+    this.gridCols = 5;
     this.gridRows = 4;
     this.scaleMode = 'micro';
     this.revealDelaySeconds = 2;
