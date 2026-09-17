@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moon Festival Mooncake Eating Game - 中秋節吃月餅遊戲</title>
+  <meta name="description" content="An interactive Mid-Autumn Festival game! Bite into numbered mooncake blocks to reveal hidden English vocabulary underneath!">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Background Canvas for Confetti & Stars -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Mid-Autumn Decorative Floating Elements -->
+  <div class="moon-bg"></div>
+  <div class="lantern lantern-left">🪔</div>
+  <div class="lantern lantern-right">🪔</div>
+
+  <!-- Header Bar -->
+  <header>
+    <div class="logo-group">
+      <div class="logo-icon">🥮</div>
+      <div>
+        <h1 class="logo-title">Mooncake Eating Game</h1>
+        <div class="logo-subtitle">中秋節吃月餅 · 英語單字遊戲</div>
+      </div>
+    </div>
+
+    <!-- HUD Stats -->
+    <div class="hud-stats">
+      <div class="stat-badge">
+        <span class="stat-label">Score</span>
+        <span id="stat-score" class="stat-value score">0</span>
+      </div>
+      <div class="stat-badge">
+        <span class="stat-label">Bites</span>
+        <span id="stat-flips" class="stat-value flips">0</span>
+      </div>
+      <div class="stat-badge">
+        <span class="stat-label">Streak</span>
+        <span id="stat-streak" class="stat-value streak">x1</span>
+      </div>
+    </div>
+
+    <!-- Controls Group -->
+    <div class="controls-group">
+      <button id="btn-sound" class="btn-icon" title="Toggle Sound">🔊</button>
+    </div>
+  </header>
+
+  <!-- Main Game Workspace -->
+  <main class="game-container">
+
+    <!-- Mode Switcher Tabs -->
+    <nav class="mode-nav">
+      <button class="mode-tab active" data-mode="quiz">🎯 Quiz Mode (挑戰模式)</button>
+      <button class="mode-tab" data-mode="versus">⚔️ 2-Player Mode (雙人對戰)</button>
+    </nav>
+
+    <!-- 2-Player Versus HUD -->
+    <div id="versus-hud" class="versus-hud" style="display: none;">
+      <div id="p1-card" class="player-card p1 active">
+        <div class="player-avatar">🔴</div>
+        <div class="player-info">
+          <span class="player-name">Player 1 (Red)</span>
+          <span id="p1-score" class="player-score">0</span>
+        </div>
+      </div>
+      <div class="turn-indicator">
+        <span id="turn-text">Player 1's Turn to Bite!</span>
+      </div>
+      <div id="p2-card" class="player-card p2">
+        <div class="player-avatar">🔵</div>
+        <div class="player-info">
+          <span class="player-name">Player 2 (Blue)</span>
+          <span id="p2-score" class="player-score">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Game Board Wrapper -->
+    <div id="board-wrapper" class="board-wrapper">
+      <div class="board-background"></div>
+      
+      <!-- Hidden Transparentized Vocabulary Layer -->
+      <div id="target-layer" class="target-layer">
+        <img id="target-img" class="target-image" src="" alt="Hidden Vocabulary Item">
+      </div>
+
+      <!-- Mooncake Sliced Grid Blocks (Default 5x4 = 20 Mooncake Blocks) -->
+      <div id="blocks-grid" class="blocks-grid"></div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <button id="btn-open-guess" class="btn-guess-main">
+        <span>Make a Guess (猜英文單字)</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Guess Picker Modal -->
+  <div id="guess-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div id="guess-modal-title" class="modal-title">Select the Correct Word</div>
+        <button id="btn-close-guess" class="btn-close">&times;</button>
+      </div>
+
+      <div id="choices-grid" class="choices-modal-grid"></div>
+    </div>
+  </div>
+
+  <!-- Victory Modal -->
+  <div id="victory-modal" class="modal-overlay">
+    <div class="modal-card victory-card">
+      <div id="victory-icon" style="font-size: 3.8rem; margin-bottom: 5px;">🥮</div>
+      <div id="victory-title" class="victory-title">Delicious! Correct!</div>
+      <div id="victory-word-name" class="victory-word-name">Mooncake</div>
+
+      <div class="victory-stats">
+        <div class="stat-badge">
+          <span class="stat-label">Points</span>
+          <span id="victory-points" class="stat-value score">+850</span>
+        </div>
+        <div class="stat-badge">
+          <span class="stat-label">Bites Used</span>
+          <span id="victory-flips" class="stat-value flips">4 Bites</span>
+        </div>
+      </div>
+
+      <button id="btn-next-round" class="btn-primary" style="width: 100%; margin-top: 15px;">Next Mooncake 🥮</button>
+    </div>
+  </div>
+
+  <!-- Main Game Engine -->
+  <script src="game.js"></script>
+</body>
+</html>
