@@ -341,40 +341,9 @@ class Game {
   }
 
   loadTargetImage(wordObj) {
-    const transparentUrl = `./Vocabulary_transparent/${wordObj.file}`;
-    
-    // Set target image source directly to pre-processed transparent PNG
+    const transparentUrl = `./Vocabulary_transparent/${encodeURI(wordObj.file)}`;
     this.targetImg.src = transparentUrl;
     setTimeout(() => this.positionTargetItem(), 50);
-
-    // Also run dynamic canvas pass as extra enhancement if supported
-    const tempImg = new Image();
-    tempImg.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const w = tempImg.width;
-        const h = tempImg.height;
-        canvas.width = w;
-        canvas.height = h;
-        ctx.drawImage(tempImg, 0, 0);
-
-        const imgData = ctx.getImageData(0, 0, w, h);
-        const data = imgData.data;
-
-        for (let i = 0; i < data.length; i += 4) {
-          if (data[i] > 185 && data[i + 1] > 185 && data[i + 2] > 185) {
-            data[i + 3] = 0;
-          }
-        }
-
-        ctx.putImageData(imgData, 0, 0);
-        this.targetImg.src = canvas.toDataURL('image/png');
-      } catch (e) {
-        // Tainted canvas on local file protocol falls back cleanly to transparentUrl
-      }
-    };
-    tempImg.src = transparentUrl;
   }
 
   positionTargetItem() {
