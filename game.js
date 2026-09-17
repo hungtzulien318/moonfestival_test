@@ -347,41 +347,29 @@ class Game {
   }
 
   positionTargetItem() {
-    const boardW = this.boardWrapper.clientWidth;
-    const boardH = this.boardWrapper.clientHeight;
+    const boardW = this.boardWrapper.clientWidth || 600;
+    const boardH = this.boardWrapper.clientHeight || 450;
 
-    const cellW = boardW / this.gridCols;
-    const cellH = boardH / this.gridRows;
+    // Target image spans across ~72% of the entire board canvas so all images (Moon, Barbecue, etc.) are large, clear, and visible
+    const targetW = boardW * 0.72;
+    const targetH = boardH * 0.72;
 
-    let targetW, targetH;
-    if (this.scaleMode === 'micro') {
-      targetW = cellW * 0.55;
-      targetH = cellH * 0.55;
-    } else if (this.scaleMode === 'tiny') {
-      targetW = cellW * 0.85;
-      targetH = cellH * 0.85;
-    } else {
-      targetW = cellW * 1.2;
-      targetH = cellH * 1.2;
-    }
+    // Center position with slight natural variation
+    const centerX = (boardW - targetW) / 2;
+    const centerY = (boardH - targetH) / 2;
 
-    // Safety margin to prevent target from ever peeking out at outer borders
-    const marginX = cellW * 0.35;
-    const marginY = cellH * 0.35;
-    const minLeft = marginX;
-    const maxLeft = Math.max(minLeft, boardW - targetW - marginX);
-    const minTop = marginY;
-    const maxTop = Math.max(minTop, boardH - targetH - marginY);
+    const left = centerX + (Math.random() - 0.5) * (boardW * 0.08);
+    const top = centerY + (Math.random() - 0.5) * (boardH * 0.08);
 
-    const left = minLeft + Math.random() * (maxLeft - minLeft);
-    const top = minTop + Math.random() * (maxTop - minTop);
+    const clampLeft = Math.max(15, Math.min(boardW - targetW - 15, left));
+    const clampTop = Math.max(15, Math.min(boardH - targetH - 15, top));
 
-    this.targetPos = { x: left, y: top, width: targetW, height: targetH };
+    this.targetPos = { x: clampLeft, y: clampTop, width: targetW, height: targetH };
 
     this.targetImg.style.width = `${targetW}px`;
     this.targetImg.style.height = `${targetH}px`;
-    this.targetImg.style.left = `${left}px`;
-    this.targetImg.style.top = `${top}px`;
+    this.targetImg.style.left = `${clampLeft}px`;
+    this.targetImg.style.top = `${clampTop}px`;
     this.targetImg.style.zIndex = '2';
   }
 
@@ -586,8 +574,8 @@ class Game {
     const boardW = this.boardWrapper.clientWidth;
     const boardH = this.boardWrapper.clientHeight;
     
-    const targetW = boardW * 0.55;
-    const targetH = boardH * 0.55;
+    const targetW = boardW * 0.78;
+    const targetH = boardH * 0.78;
 
     this.targetImg.style.width = `${targetW}px`;
     this.targetImg.style.height = `${targetH}px`;
