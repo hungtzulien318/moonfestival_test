@@ -315,6 +315,7 @@ header {
 
 .target-image {
   position: absolute;
+  z-index: 2;
   object-fit: contain;
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.6));
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -335,6 +336,10 @@ header {
   border: 1px solid rgba(0, 0, 0, 0.25);
   transition: transform 0.2s ease, opacity 0.3s ease, filter 0.2s ease;
   background-repeat: no-repeat;
+  /* Mask matching the board's own base tone (not the mooncake's gold) so any
+     transparent gap in the mooncake art blends into the board instead of
+     leaking whatever sits underneath. Removed together with the tile on bite. */
+  background-color: #0f172a;
   /* background-image & background-position dynamically set via JS for 月餅1.jpg */
 }
 

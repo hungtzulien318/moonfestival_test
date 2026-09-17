@@ -343,33 +343,36 @@ class Game {
   }
 
   loadTargetImage(wordObj) {
-    const transparentUrl = `./Vocabulary_transparent/${encodeURI(wordObj.file)}`;
-    this.targetImg.src = transparentUrl;
-
     // Pick the hidden block once per round; resizing must not move the answer
     this.targetCol = Math.floor(Math.random() * this.gridCols);
     this.targetRow = Math.floor(Math.random() * this.gridRows);
     this.targetCellIndex = this.targetRow * this.gridCols + this.targetCol;
 
-    setTimeout(() => this.positionTargetItem(), 50);
+    // Size/position must be applied in the same tick as the new src so the
+    // browser never has a frame to paint the image at its default size/spot
+    this.targetImg.src = `./Vocabulary_transparent/${encodeURI(wordObj.file)}`;
+    this.positionTargetItem();
   }
 
   positionTargetItem() {
     const boardW = this.boardWrapper.clientWidth || 600;
     const boardH = this.boardWrapper.clientHeight || 450;
 
-    // Target image is exactly one grid cell in size, hidden behind the round's chosen block
+    // Target image sits inside the round's chosen cell, slightly inset so it
+    // never peeks past that tile's edges (mooncake art isn't a perfect square)
     const cellW = boardW / this.gridCols;
     const cellH = boardH / this.gridRows;
+    const inset = 0.85;
+    const targetW = cellW * inset;
+    const targetH = cellH * inset;
 
-    const left = this.targetCol * cellW;
-    const top = this.targetRow * cellH;
+    const left = this.targetCol * cellW + (cellW - targetW) / 2;
+    const top = this.targetRow * cellH + (cellH - targetH) / 2;
 
-    this.targetImg.style.width = `${cellW}px`;
-    this.targetImg.style.height = `${cellH}px`;
+    this.targetImg.style.width = `${targetW}px`;
+    this.targetImg.style.height = `${targetH}px`;
     this.targetImg.style.left = `${left}px`;
     this.targetImg.style.top = `${top}px`;
-    this.targetImg.style.zIndex = '2';
   }
 
   renderMooncakeGrid() {
