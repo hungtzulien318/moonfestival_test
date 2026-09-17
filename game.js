@@ -312,6 +312,7 @@ class Game {
   }
 
   startNewRound() {
+    this.targetBlockIndex = Math.floor(Math.random() * (this.gridCols * this.gridRows));
     this.revealedBlocks.clear();
     this.flips = 0;
 
@@ -350,26 +351,29 @@ class Game {
     const boardW = this.boardWrapper.clientWidth || 600;
     const boardH = this.boardWrapper.clientHeight || 450;
 
-    // Target image spans across ~72% of the entire board canvas so all images (Moon, Barbecue, etc.) are large, clear, and visible
-    const targetW = boardW * 0.72;
-    const targetH = boardH * 0.72;
+    const cellW = boardW / this.gridCols;
+    const cellH = boardH / this.gridRows;
 
-    // Center position with slight natural variation
-    const centerX = (boardW - targetW) / 2;
-    const centerY = (boardH - targetH) / 2;
+    if (this.targetBlockIndex === undefined || this.targetBlockIndex === null) {
+      this.targetBlockIndex = Math.floor(Math.random() * (this.gridCols * this.gridRows));
+    }
 
-    const left = centerX + (Math.random() - 0.5) * (boardW * 0.08);
-    const top = centerY + (Math.random() - 0.5) * (boardH * 0.08);
+    const col = this.targetBlockIndex % this.gridCols;
+    const row = Math.floor(this.targetBlockIndex / this.gridCols);
 
-    const clampLeft = Math.max(15, Math.min(boardW - targetW - 15, left));
-    const clampTop = Math.max(15, Math.min(boardH - targetH - 15, top));
+    // Position image centered inside its single assigned mooncake grid cell
+    const targetW = cellW * 0.85;
+    const targetH = cellH * 0.85;
 
-    this.targetPos = { x: clampLeft, y: clampTop, width: targetW, height: targetH };
+    const left = col * cellW + (cellW - targetW) / 2;
+    const top = row * cellH + (cellH - targetH) / 2;
+
+    this.targetPos = { x: left, y: top, width: targetW, height: targetH };
 
     this.targetImg.style.width = `${targetW}px`;
     this.targetImg.style.height = `${targetH}px`;
-    this.targetImg.style.left = `${clampLeft}px`;
-    this.targetImg.style.top = `${clampTop}px`;
+    this.targetImg.style.left = `${left}px`;
+    this.targetImg.style.top = `${top}px`;
     this.targetImg.style.zIndex = '2';
   }
 
