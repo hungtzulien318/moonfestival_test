@@ -197,7 +197,7 @@ class ConfettiCannon {
 // 4. Main Game Engine
 class Game {
   constructor() {
-    this.gridCols = 5;
+    this.gridCols = 4;
     this.gridRows = 4;
     this.scaleMode = 'micro';
     this.revealDelaySeconds = 2;
@@ -213,7 +213,9 @@ class Game {
 
     this.currentWord = null;
     this.revealedBlocks = new Set();
-    this.targetPos = { x: 0, y: 0, width: 0, height: 0 };
+    this.targetCol = 0;
+    this.targetRow = 0;
+    this.targetCellIndex = 0;
 
     this.initDOM();
     this.initEvents();
@@ -343,6 +345,12 @@ class Game {
   loadTargetImage(wordObj) {
     const transparentUrl = `./Vocabulary_transparent/${encodeURI(wordObj.file)}`;
     this.targetImg.src = transparentUrl;
+
+    // Pick the hidden block once per round; resizing must not move the answer
+    this.targetCol = Math.floor(Math.random() * this.gridCols);
+    this.targetRow = Math.floor(Math.random() * this.gridRows);
+    this.targetCellIndex = this.targetRow * this.gridCols + this.targetCol;
+
     setTimeout(() => this.positionTargetItem(), 50);
   }
 
@@ -350,26 +358,17 @@ class Game {
     const boardW = this.boardWrapper.clientWidth || 600;
     const boardH = this.boardWrapper.clientHeight || 450;
 
-    // Target image spans across ~72% of the entire board canvas so all images (Moon, Barbecue, etc.) are large, clear, and visible
-    const targetW = boardW * 0.72;
-    const targetH = boardH * 0.72;
+    // Target image is exactly one grid cell in size, hidden behind the round's chosen block
+    const cellW = boardW / this.gridCols;
+    const cellH = boardH / this.gridRows;
 
-    // Center position with slight natural variation
-    const centerX = (boardW - targetW) / 2;
-    const centerY = (boardH - targetH) / 2;
+    const left = this.targetCol * cellW;
+    const top = this.targetRow * cellH;
 
-    const left = centerX + (Math.random() - 0.5) * (boardW * 0.08);
-    const top = centerY + (Math.random() - 0.5) * (boardH * 0.08);
-
-    const clampLeft = Math.max(15, Math.min(boardW - targetW - 15, left));
-    const clampTop = Math.max(15, Math.min(boardH - targetH - 15, top));
-
-    this.targetPos = { x: clampLeft, y: clampTop, width: targetW, height: targetH };
-
-    this.targetImg.style.width = `${targetW}px`;
-    this.targetImg.style.height = `${targetH}px`;
-    this.targetImg.style.left = `${clampLeft}px`;
-    this.targetImg.style.top = `${clampTop}px`;
+    this.targetImg.style.width = `${cellW}px`;
+    this.targetImg.style.height = `${cellH}px`;
+    this.targetImg.style.left = `${left}px`;
+    this.targetImg.style.top = `${top}px`;
     this.targetImg.style.zIndex = '2';
   }
 
@@ -441,20 +440,10 @@ class Game {
     const col = index % this.gridCols;
     const row = Math.floor(index / this.gridCols);
 
-    const blockLeft = col * cellW;
-    const blockTop = row * cellH;
-    const blockRight = blockLeft + cellW;
-    const blockBottom = blockTop + cellH;
+    const intersects = (index === this.targetCellIndex);
 
-    const intersects = !(
-      blockRight < this.targetPos.x ||
-      blockLeft > this.targetPos.x + this.targetPos.width ||
-      blockBottom < this.targetPos.y ||
-      blockTop > this.targetPos.y + this.targetPos.height
-    );
-
-    const toastCenterX = blockLeft + cellW / 2;
-    const toastCenterY = blockTop + cellH / 2;
+    const toastCenterX = col * cellW + cellW / 2;
+    const toastCenterY = row * cellH + cellH / 2;
     this.spawnCellToast(toastCenterX, toastCenterY, intersects);
 
     if (intersects) {
